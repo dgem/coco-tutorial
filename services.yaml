@@ -1,3 +1,4 @@
 services:
   - name: my-app@.service
     count: 1
+  - name: tunnel-registrator.service
