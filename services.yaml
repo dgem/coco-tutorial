@@ -2,6 +2,6 @@ services:
   - name: my-app@.service
     count: 5
   - name: my-appy@.service
-    count: 5
+    count: 2
   - name: tunnel-registrator.service
     uri: https://raw.githubusercontent.com/Financial-Times/up-service-files/master/tunnel-registrator.service
