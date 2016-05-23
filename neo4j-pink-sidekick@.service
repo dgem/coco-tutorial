@@ -1,0 +1,15 @@
+[Unit]
+Description=Neo4j Pink Sidekick
+BindsTo=neo4j-pink@%i.service
+After=neo4j-pink@%i.service
+
+[Service]
+ExecStart=/bin/sh -c "\
+  etcdctl mkdir /ft/services/neo4j-pink/servers; \
+  etcdctl set /vulcand/frontends/neo4j-pink-db/frontend '{\"Type\": \"http\", \"BackendId\": \"vcb-neo4j-pink\", \"Route\": \"HeaderRegexp(`Referer`, `.*__neo4j-pink.*`)\", \"Settings\": { \"TrustForwardHeader\": true, \"PassHostHeader\": true }}'; \
+  while true; do \
+    PORT=`[ $PORT ] && echo $PORT || echo $(/usr/bin/docker port neo4j-pink-%i 7474 | cut -d':' -f2)`; \
+    etcdctl set /ft/services/neo4j-pink/servers/%i "http://$HOSTNAME:$PORT" --ttl 600; \
+    sleep 120; \
+  done"
+ExecStop=/usr/bin/etcdctl rm /ft/services/neo4j-pink/servers/%i
